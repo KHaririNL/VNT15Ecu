@@ -3,34 +3,15 @@
 #include <SoftwareSerial.h>
 #include <PID_v1.h>
 
-/*
-       N75 to vanes, according to vanbcguy's data
-       =======================
-       204 = 80% N75 duty cycle = vanes fully closed (100%)
-       70  = 23% N75 duty cycle = vanes fully opened (0%)
-       
-       According to "https://dieselnet.com/tech/air_turbo_vgt.php" ,
-       "peak efficiency of a variable geometry turbine occurs at about 60% nozzle opening" so;
-       70 + (204-70) * 0.6 = 150
-       150 / 255 = 0.589 <-- round up to 60%
-
-  ---- 60% should handle the cruise situation too;
-       https://forums.tdiclub.com/index.php?threads/vnt-is-killing-your-fuel-economy.508304/
-        Cruise at 70-90% PWM: 6-10psi
-        Cruise at 30-45% PWM: 1-2psi
-
-        Predicted boost while cruising at 60%: 4psi = 0.28bar (good)
-*/
-#define VNT_SETPOINT_POWER 0.60f
+#define VNT_SETPOINT_POWER 0.60f  //Maximum opening of VNT; optimal efficiency according to "https://dieselnet.com/tech/air_turbo_vgt.php" ,
 #define BOOST_MAX_SPEC_KPA 750.0  //0.75 bar
 #define BOOST_DESIRED_SPEC_KPA 400
 #define BOOST_IDLE_THRESHOLD 250  //No boost situation, when below this value
-#define MASTER_BOOST_PWM_PIN 5
+#define MASTER_BOOST_PWM_PIN 3
 #define BOOST_LVL_PIN A0
 
 #define EXEC_UPDATE 30
 #define SENSOR_FAST_UPDATE 15
-#define N75_FREQ 24  //24 clicks per second max
 
 //PID SETTINGS
 //Ziegler–Nichols method; https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_controller#Ziegler%E2%80%93Nichols_method
@@ -75,12 +56,15 @@ int getFilteredAverage(struct avgStruct* a) {
 }
 /***********AVGSTRUCTS/>****************/
 
+
 void setup(void) {
-  Serial.begin(115200);  //Initialize Serial Port
+  Serial.begin(115200);
 
   pinMode(MASTER_BOOST_PWM_PIN, OUTPUT);
   vntPid.SetSampleTime(EXEC_UPDATE);
-  analogWriteFrequency(MASTER_BOOST_PWM_PIN, N75_FREQ);
+
+  //Set frequency of Pin3 to 30.64 Hz
+  TCCR2B = TCCR2B & B11111000 | B00000111;
 }
 
 unsigned long sensorFastUpdate = 0;
@@ -139,7 +123,6 @@ void loop(void) {
       iVNTSignal = max(0, iVNTSignal);
       analogWrite(MASTER_BOOST_PWM_PIN, iVNTSignal);
     }
-
 
     if (!hasUsedPid) {
       vntPid.SetMode(MANUAL);

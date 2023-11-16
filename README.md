@@ -53,4 +53,6 @@ The 5V is used for the Arduino and Map Sensor, while 12V is used for the solenoi
 To control the solenoid you'll need 12V at +-1 amps. The IRF520N MOSFET is readily available, and can handle that kind of currents although unfortunately you cannot drive it directly with an Arduino (it needs a higher voltage to open, +-7V). I thus trigger first with the Arduino transistors, which in turn drive the MOSFET:
 ![driverCircuit](https://raw.githubusercontent.com/KHaririNL/VNT15Ecu/main/images/DriverCircuit.png)
 
+This circuit is layed out for building on a prototype board here;
+![pinboard](https://raw.githubusercontent.com/KHaririNL/VNT15Ecu/main/images/Pinboard.jpg)
 

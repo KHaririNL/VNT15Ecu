@@ -38,18 +38,18 @@ Considering the 0.8bar/12psi safe limit we found previously, a safety margin nee
 Therefore I run the engine at half the theorized pressure (0.4bar/8psi), with the fuel pump adjusted so it doesn't smoke. I expect the max EGT to be 500C/900F (blue line in the graph)
 
 ## Driver Electronics for Boost Solenoid
-### Map Sensor: 0261230120
+#### Map Sensor: 0261230120
 I use a Ford 3 Bar Map sensor because it fits the boost hose perfectly. It's part number is: 0261230120. It's actually exactly the same sensor as the one from https://www.reveltronics.com/en/shop/70/6/onboard-computers/boost-pressure-sensor-map-3bar-5v-detail . On Aliexpress / AutoDoc it's alot cheaper though (1/4th of the price).
 
-### Solenoid: MAC 35A-AAA-DDBA-1BA
+#### Solenoid: MAC 35A-AAA-DDBA-1BA
 Although you can also use a N75, the MAC was more economical for me.
 
-### Microcontroller : Arduino UNO
+#### Microcontroller : Arduino UNO
 
-### LM2596S tuned to 5V and 12V
+#### LM2596S tuned to 5V and 12V
 The 5V is used for the Arduino and Map Sensor, while 12V is used for the solenoid
 
-### Driver Circuit
+#### Driver Circuit
 To control the solenoid you'll need 12V at +-1 amps. The IRF520N MOSFET is readily available, and can handle that kind of currents although unfortunately you cannot drive it directly with an Arduino (it needs a higher voltage to open, +-7V). I thus trigger first with the Arduino transistors, which in turn drive the MOSFET:
 ![driverCircuit](https://raw.githubusercontent.com/KHaririNL/VNT15Ecu/main/images/DriverCircuit.png)
 
